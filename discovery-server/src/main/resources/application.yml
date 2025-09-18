@@ -1,0 +1,14 @@
+spring:
+  freemarker:
+    template-loader-path: classpath:/templates/
+    prefer-file-system-access: false
+  application:
+    name: discovery-server
+
+server:
+  port: 3000
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false

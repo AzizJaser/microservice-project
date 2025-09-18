@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15
+    container_name: "postgres-crud"
+    environment:
+      POSTGRES_DB: "CRUDdb"
+      POSTGRES_USER: "aziz"
+      POSTGRES_PASSWORD: "password_123"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-crud-data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: my-crud-app
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/CRUDdb
+      SPRING_DATASOURCE_USERNAME: aziz
+      SPRING_DATASOURCE_PASSWORD: password_123
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
+
+volumes:
+  postgres-crud-data: {}
+
+networks:
+  backend:
+
