@@ -5,6 +5,11 @@ spring:
   application:
     name: product-service
 
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data.sql
+
   datasource:
     url: jdbc:postgresql://localhost:5433/productdb
     username: aziz
@@ -19,3 +24,5 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:3000/eureka
+
+
