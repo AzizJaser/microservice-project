@@ -14,10 +14,22 @@ spring:
           uri: lb://auth-service
           predicates:
             - Path=/api/v1/auth/**
+          filters:
+            - AddRequestHeader=X-Internal-Call, true
+
         - id: user-service
           uri: lb://auth-service
           predicates:
             - Path=/api/v1/users/**
+          filters:
+            - AddRequestHeader=X-Internal-Call, true
+
+        - id: product-service
+          uri: lb://product-service
+          predicates:
+            - Path=/api/v1/products/**
+          filters:
+            - AddRequestHeader=X-Internal-Call, true
 
 eureka:
   client:
