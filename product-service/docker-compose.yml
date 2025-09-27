@@ -1,17 +1,38 @@
 version: "3.8"
 
 services:
+
+  # 🗄️ PostgreSQL for Product Service
   product-db:
     image: postgres:16
     container_name: products-db
     ports:
       - "5433:5432"
     environment:
-      POSTGRES_DB: "productdb"
-      POSTGRES_USER: "aziz"
-      POSTGRES_PASSWORD: "password_123"
+      POSTGRES_DB: productdb
+      POSTGRES_USER: aziz
+      POSTGRES_PASSWORD: password_123
     volumes:
       - product_pgdata:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  # 🛒 Product Service
+  product-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: product-service
+    depends_on:
+      - product-db
+      - discovery-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://product-db:5433/productdb
+      SPRING_DATASOURCE_USERNAME: aziz
+      SPRING_DATASOURCE_PASSWORD: password_123
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:3000/eureka/
+    ports:
+      - "8082:8082"
     networks:
       - backend
 

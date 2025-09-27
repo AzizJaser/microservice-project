@@ -7,7 +7,7 @@ spring:
 
   sql:
     init:
-      mode: always
+      mode: never
       data-locations: classpath:data.sql
 
   datasource:
@@ -23,6 +23,6 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:3000/eureka
+      defaultZone: http://discovery-server:3000/eureka
 
 
