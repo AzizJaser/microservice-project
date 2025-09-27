@@ -12,6 +12,7 @@ import com.example.auth_service.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import com.example.auth_service.enums.Roles.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDateTime;
@@ -64,7 +65,7 @@ class AuthServiceTest {
         User savedUser = userCaptor.getValue();
         assertEquals("aziz", savedUser.getUsername());
         assertEquals("encodedPassword", savedUser.getPassword());
-        assertTrue(savedUser.getRoles().contains(Roles.USER));
+        assertTrue(savedUser.getRoles().contains(Roles.ROLE_USER));
 
         assertEquals("mocked.jwt.token", response.getToken());
         assertNotNull(response.getExpireAt());
@@ -80,7 +81,7 @@ class AuthServiceTest {
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword("encodedPassword");
-        user.setRoles(Set.of(Roles.USER));
+        user.setRoles(Set.of(Roles.ROLE_USER));
 
         when(userService.getUserByEmail(request.getEmail())).thenReturn(user);
         when(passwordEncoder.matches(request.getPassword(), user.getPassword())).thenReturn(true);
@@ -130,7 +131,7 @@ class AuthServiceTest {
         User user = new User();
         user.setEmail(request.getEmail());
         user.setPassword("encodedCorrectPassword");
-        user.setRoles(Set.of(Roles.USER));
+        user.setRoles(Set.of(Roles.ROLE_USER));
 
         when(userService.getUserByEmail(request.getEmail())).thenReturn(user);
         when(passwordEncoder.matches(request.getPassword(), user.getPassword())).thenReturn(false);

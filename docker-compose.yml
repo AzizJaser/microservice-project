@@ -1,0 +1,103 @@
+version: "3.8"
+
+services:
+
+  # 🗄️ Auth DB
+  auth-db:
+    image: postgres:15
+    container_name: auth-db
+    environment:
+      POSTGRES_DB: CRUDdb
+      POSTGRES_USER: aziz
+      POSTGRES_PASSWORD: password_123
+    ports:
+      - "5432:5432"
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  # 🗄️ Product DB
+  product-db:
+    image: postgres:16
+    container_name: product-db
+    environment:
+      POSTGRES_DB: productdb
+      POSTGRES_USER: aziz
+      POSTGRES_PASSWORD: password_123
+    ports:
+      - "5433:5432"
+    volumes:
+      - product_db_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  # 🧠 Discovery Server (Eureka)
+  discovery-server:
+    build:
+      context: ./discovery-server # there is no docker file in discovery server
+      dockerfile: Dockerfile
+    container_name: discovery-server
+    ports:
+      - "3000:3000"
+    networks:
+      - backend
+
+  # 🔐 Auth Service
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    container_name: auth-service
+    depends_on:
+      - auth-db
+      - discovery-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://auth-db:5432/CRUDdb
+      SPRING_DATASOURCE_USERNAME: aziz
+      SPRING_DATASOURCE_PASSWORD: password_123
+    ports:
+      - "8081:8081"
+    networks:
+      - backend
+
+  # 🛒 Product Service
+  product-service:
+    build:
+      context: ./product-service
+      dockerfile: Dockerfile
+    container_name: product-service
+    depends_on:
+      - product-db
+      - discovery-server
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://product-db:5432/productdb
+      SPRING_DATASOURCE_USERNAME: aziz
+      SPRING_DATASOURCE_PASSWORD: password_123
+    ports:
+      - "8082:8082"
+    networks:
+      - backend
+
+  # 🌐 API Gateway
+  api-gateway:
+    build:
+      context: ./api-gateway # there is no docker file in api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    depends_on:
+      - auth-service
+      - product-service
+      - discovery-server
+    ports:
+      - "8080:8080"
+    networks:
+      - backend
+
+volumes:
+  auth_db_data:
+  product_db_data:
+
+networks:
+  backend:
+    driver: bridge
